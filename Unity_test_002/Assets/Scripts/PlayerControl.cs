@@ -8,6 +8,8 @@ public class PlayerControl : MonoBehaviour
     public CharacterController characterController;
     public float moveSpeed = 5f;
     public float mouseSpeed = 1.0f;
+    public float maxAngle = 40f;
+    public float minAngle = -40f;
 
     private float mouseVertical = 0;
     private float mouseHorizontal = 0;
@@ -21,7 +23,10 @@ public class PlayerControl : MonoBehaviour
     void Update()
     {
         mouseHorizontal += Input.GetAxis("Mouse X") * mouseSpeed;
-        mouseVertical += Input.GetAxis("Mouse Y") * mouseSpeed * -1;
+        mouseVertical -= Input.GetAxis("Mouse Y") * mouseSpeed;
+
+        mouseVertical = Mathf.Clamp(mouseVertical, minAngle, maxAngle);
+
         mouseScroll += Input.GetAxis("Mouse ScrollWheel") * mouseSpeed * 5;
         Camera.main.transform.localRotation = Quaternion.Euler(mouseVertical, mouseHorizontal, mouseScroll);
 
@@ -29,6 +34,9 @@ public class PlayerControl : MonoBehaviour
         float sideMove = Input.GetAxis("Horizontal");
 
         Vector3 direction = new Vector3(sideMove, 0, forwardMove);
+
+        direction = Camera.main.transform.rotation * direction;
+
         characterController.Move(direction * Time.deltaTime * moveSpeed);
     }
 }
